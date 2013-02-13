@@ -11,7 +11,7 @@ SEED=1  # Random seed
 NCPU=20 # Number of threads/processes to use for parallel computations
 
 ### 1.3 INPUT files:
-TRAIN=../data/tokenized/ukwac-25.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
+TRAIN=../data/tokenized/ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
 
 ### 2. COMMON FILES
 
@@ -38,7 +38,7 @@ prepare.trial:
 	../bin/trial_data_parser.py | gzip > trial.ngram.gz
 
 
-ukwac.vocab.gz: ${TRAIN}  ## LM_VOCAB=20: time=1m16s, wc=78498   78498  672284
+ukwac.vocab.gz: ${TRAIN}  ## LM_VOCAB=20: time=2219s wc=672335 672009 5983977
 	zcat ${TRAIN} | ngram-count -write-order 1 -text - -write - | \
 	perl -lane 'print $$F[0] if $$F[1] >= ${LM_VOCAB}' | gzip > $@
 
