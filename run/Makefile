@@ -35,7 +35,7 @@ ukwac.tokenize: # time=1h30m,
 
 #TODO prepare.% #training/test
 prepare.trial:
-	../bin/trial_data_parser.py
+	../bin/trial_data_parser.py | gzip > trial.ngram.gz
 
 
 ukwac.vocab.gz: ${TRAIN}  ## LM_VOCAB=20: time=1m16s, wc=78498   78498  672284
