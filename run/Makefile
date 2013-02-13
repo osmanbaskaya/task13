@@ -29,9 +29,13 @@ LM_VOCAB=20 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
 
 #TODO: Time ve wc'ler daha duzeltilmedi
-
 ukwac.tokenize: # time=1h30m,
 	tokenize.py
+
+
+#TODO prepare.% #training/test
+prepare.trial:
+	../bin/trial_data_parser.py
 
 
 ukwac.vocab.gz: ${TRAIN}  ## LM_VOCAB=20: time=1m16s, wc=78498   78498  672284
