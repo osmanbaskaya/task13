@@ -1,3 +1,8 @@
+run/
+bin/
+data/
+src/
+
 *.py[cod]
 
 # C extensions
