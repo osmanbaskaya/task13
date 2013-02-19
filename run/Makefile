@@ -8,10 +8,11 @@ bin:
 SRILM_PATH=/opt/srilm/bin/i686-m64
 export PATH := ../../bin:.:${SRILM_PATH}:${PATH} # Binaries in the bin directory
 SEED=1  # Random seed
-NCPU=20 # Number of threads/processes to use for parallel computations
+NCPU=7 # Number of threads/processes to use for parallel computations
 
+DATA=../data/tokenized/
 ### 1.3 INPUT files:
-TRAIN=../data/tokenized/ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
+TRAIN=${DATA}ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
 
 ### 2. COMMON FILES
 
@@ -25,7 +26,7 @@ TRAIN=../data/tokenized/ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385
 
 ### 2.2 SRILM options:
 LM_NGRAM=4  # n-gram order
-LM_VOCAB=20 # words seen less than this in GETTRAIN will be replaced with <unk>
+LM_VOCAB=100 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
 
 #TODO: Time ve wc'ler daha duzeltilmedi
@@ -37,13 +38,14 @@ ukwac.tokenize: # time=1h30m,
 prepare.trial:
 	../bin/trial_data_parser.py | gzip > trial.ngram.gz
 
+%.vocab.gz: ${DATA}%.tok.gz  ## LM_VOCAB=100: time=2219s wc=672335 672009 5983977
+	#awk '{if ($2 >= 20) {print $0}}' | gzip > $@
+	zcat $< | ngram-count -write-order 1 -text - -write - | awk '{if ($2 >= ${LM_VOCAB}) {print $1}}' | gzip > $@ 
+	#zcat $< | ngram-count -write-order 1 -text - -write - | \
+	#perl -lane 'print $$F[0] if $$F[1] >= ${LM_VOCAB}' | gzip > $@
 
-ukwac.vocab.gz: ${TRAIN}  ## LM_VOCAB=20: time=2219s wc=672335 672009 5983977
-	zcat ${TRAIN} | ngram-count -write-order 1 -text - -write - | \
-	perl -lane 'print $$F[0] if $$F[1] >= ${LM_VOCAB}' | gzip > $@
-
-ukwac.lm.gz: ukwac.vocab.gz ${TRAIN} ## LM_NGRAM=4, LM_VOCAB=20: time=6m10s, wc=27427373 118077512 847912087
-	${GETTRAIN} | ngram-count -order ${LM_NGRAM} -kndiscount -interpolate -unk -vocab $< -text - -lm $@
+ukwac.lm.gz: ukwac.vocab.gz ${TRAIN}
+	zcat ${TRAIN} | ngram-count -order ${LM_NGRAM} -kndiscount -interpolate -unk -vocab $< -text - -lm $@
 
 
 ### 2.3 FASTSUBS options:
