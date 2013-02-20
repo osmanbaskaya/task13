@@ -11,12 +11,19 @@ import nltk
 #import re
 from nltk.stem.wordnet import WordNetLemmatizer
 
-
-DATA='../data/trial.xml'
+DATA='../trial/data/semeval-2013-task-10-trial-data.xml'
 TARGET = "__XX__"
 
 lmtzr = WordNetLemmatizer()
 
+
+def tokenize():
+    soup = BeautifulSoup(open(DATA), 'xml')
+    instances = soup.find_all('instance')
+    for instance in instances:
+        sentences = instance.next
+        tokens = nltk.word_tokenize(sentences)
+        print ' '.join(tokens)
 
 def get_window(tokens, n=4, target=TARGET):
     index = tokens.index(TARGET)
@@ -48,7 +55,8 @@ def parse():
             #print sname, mean
 
 def main():
-    parse()
+    #parse()
+    tokenize()
 
 if __name__ == '__main__':
     main()

@@ -30,13 +30,15 @@ LM_VOCAB=100 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
 
 
-ukwac.split:
+ukwac.split: #splitting data into training and test for perplexity calc.
 	../bin/data_splitter.py
 
 #TODO: Time ve wc'ler daha duzeltilmedi
 ukwac.tokenize: ## time=1h30m, wc=88214600 2247153469 12385653002
 	tokenize.py
 
+trial.tok.gz: ../trial
+	../bin/trial_data_parser.py | gzip > $@
 
 #TODO prepare.% #training/test
 prepare.trial:
