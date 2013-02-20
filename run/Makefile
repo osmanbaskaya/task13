@@ -12,7 +12,7 @@ NCPU=7 # Number of threads/processes to use for parallel computations
 
 DATA=../data/tokenized/
 ### 1.3 INPUT files:
-TRAIN=${DATA}ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
+TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
 
 ### 2. COMMON FILES
 
@@ -46,7 +46,7 @@ prepare.trial:
 
 %.vocab.gz: ${DATA}%.tok.gz  ## LM_VOCAB=100: time=2219s wc=672335 672009 5983977
 	#awk '{if ($2 >= 20) {print $0}}' | gzip > $@
-	zcat $< | ngram-count -write-order 1 -text - -write - | awk '{if ($2 >= ${LM_VOCAB}) {print $1}}' | gzip > $@ 
+	zcat $< | ngram-count -write-order 1 -text - -write - | awk '{if ($$2 >= ${LM_VOCAB}) {print $1}}' | gzip > $@ 
 	#zcat $< | ngram-count -write-order 1 -text - -write - | \
 	#perl -lane 'print $$F[0] if $$F[1] >= ${LM_VOCAB}' | gzip > $@
 
