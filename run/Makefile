@@ -25,12 +25,16 @@ TRAIN=${DATA}ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
 	#zcat $< | perl -lane 'print $$F[1] if /\S/' | gzip > $@
 
 ### 2.2 SRILM options:
-LM_NGRAM=4  # n-gram order
+LM_NGRAM=3  # n-gram order
 LM_VOCAB=100 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
 
+
+ukwac.split:
+	../bin/data_splitter.py
+
 #TODO: Time ve wc'ler daha duzeltilmedi
-ukwac.tokenize: # time=1h30m,
+ukwac.tokenize: ## time=1h30m, wc=88214600 2247153469 12385653002
 	tokenize.py
 
 
@@ -47,6 +51,10 @@ prepare.trial:
 ukwac.lm.gz: ukwac.vocab.gz ${TRAIN}
 	zcat ${TRAIN} | ngram-count -order ${LM_NGRAM} -kndiscount -interpolate -unk -vocab $< -text - -lm $@
 
+ukwac.ppl.gz: 
+	#zcat $*.tok.gz | \
+	#ngram -order ${LM_NGRAM} -unk -lm $< -ppl - -debug 2 | gzip > $@
+	zcat ${TRAIN} | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm3.gz -ppl - -debug 2 | gzip > $@
 
 ### 2.3 FASTSUBS options:
 FS_NSUB=100 # go until you have this many substitutes
@@ -55,5 +63,4 @@ FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 
 ukwac.sub.gz: ${TEST} ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1: time=4h47m, wc=1222974 245817774 2350067125
 	zcat $< | fastsubs ${FS_OPTIONS} wsj.lm.gz | gzip > $@
-
 
