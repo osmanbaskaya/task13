@@ -16,11 +16,30 @@ def data_split():
         
     train = gzip.open('train.ukwac.tok.gz', 'w')
     test = gzip.open('test.ukwac.tok.gz', 'w')
+    count=0
     with gzip.open(INPUT) as f:
         temp_words = []
+        temp_test_words = []
         for line in f:
-            if random.random() > RAND:
-                temp_words
+            if random.random() < 0.01 and count<TOTAL_TOKEN:
+                temp_test_words.append(line)
+                count += len(line.split())
+                if len(temp_test_words) > 1000:
+                    test.write(''.join(temp_test_words))
+                    temp_test_words = []
+            else:
+                temp_words.append(line)
+                if len(temp_words) > 1000:
+                    train.write(''.join(temp_words))
+                    temp_words = []
+    test.close()
+    train.close()
+
+
+
+
+
+
                 
 
 
