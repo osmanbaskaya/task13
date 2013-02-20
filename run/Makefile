@@ -13,6 +13,7 @@ NCPU=7 # Number of threads/processes to use for parallel computations
 DATA=../data/tokenized/
 ### 1.3 INPUT files:
 TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
+TEST=${DATA}test.ukwac.tok.gz
 
 ### 2. COMMON FILES
 
@@ -25,7 +26,7 @@ TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 1238565300
 	#zcat $< | perl -lane 'print $$F[1] if /\S/' | gzip > $@
 
 ### 2.2 SRILM options:
-LM_NGRAM=3  # n-gram order
+LM_NGRAM=4# n-gram order
 LM_VOCAB=100 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
 
@@ -56,7 +57,7 @@ ukwac.lm.gz: ukwac.vocab.gz ${TRAIN}
 ukwac.ppl.gz: 
 	#zcat $*.tok.gz | \
 	#ngram -order ${LM_NGRAM} -unk -lm $< -ppl - -debug 2 | gzip > $@
-	zcat ${TRAIN} | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm3.gz -ppl - -debug 2 | gzip > $@
+	zcat ${TEST} | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm${LM_NGRAM}.gz -ppl - -debug 2 | gzip > $@
 
 ### 2.3 FASTSUBS options:
 FS_NSUB=100 # go until you have this many substitutes
