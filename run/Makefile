@@ -15,6 +15,7 @@ DATA=../data/tokenized/
 TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
 TEST=${DATA}test.ukwac.tok.gz  # ukWaC Test Corpus wc= 39203 998193 5509360
 
+
 ### 2. COMMON FILES
 
 ### 2.1 GOLD answers:
@@ -85,6 +86,5 @@ FS_NSUB=100 # go until you have this many substitutes
 FS_PSUB=1.0 # or this much cumulative probability
 FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 
-ukwac.sub.gz: ${TEST} ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1 
-	zcat $< | fastsubs ${FS_OPTIONS} wsj.lm.gz | gzip > $@
-
+%.sub.gz: %.ngram.gz ukwac.lm4.gz  ## FS_NSUB=100 FS_PSUB=1 
+	zcat $< | fastsubs ${FS_OPTIONS} | grep -P '^__XX__\t' | gzip > $@
