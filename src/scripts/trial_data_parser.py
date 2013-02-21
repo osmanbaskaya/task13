@@ -48,11 +48,14 @@ def parse():
         tokens = nltk.word_tokenize(sentences)
         window = ' '.join(get_window(tokens))
         senses = instance.find_all('sense')
-        print inst_id, lemma, pos, "\t", window
+        gold = []
         for sense in senses:
             mean = sense['mean']
             sname = sense['name']
-            #print sname, mean
+            gold.append(sname)
+            gold.append(mean)
+        print inst_id, lemma, pos, "\t", window, '\t', ' '.join(gold)
+
 
 def main():
     parse()

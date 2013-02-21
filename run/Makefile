@@ -41,8 +41,23 @@ trial.tok.gz: ../trial
 	../bin/trial_data_parser.py | gzip > $@
 
 #TODO prepare.% #training/test
-prepare.trial:
-	../bin/trial_data_parser.py | gzip > trial.ngram.gz
+trial.gz: ../trial/data/semeval-2013-task-10-trial-data.xml
+	../bin/trial_data_parser.py | gzip > $@
+
+trial.ngram.gz: trial.gz
+	zcat $< | cut -f2 | gzip > $@
+
+trial.gold.gz: trial.gz
+	zcat $< | cut -f3 | gzip > $@
+
+trial.pos.gz: trial.gz
+	zcat $< | perl -lane 'print $$F[2]' | gzip > $@
+	
+trial.word.gz: trial.gz
+	zcat $< | perl -lane 'print $$F[1]' | gzip > $@
+
+trial.id.gz: trial.gz
+	zcat $< | perl -lane 'print $$F[0]' | gzip > $@
 
 %.vocab.gz: ${DATA}%.tok.gz  ## LM_VOCAB=100: time=2219s wc=672335 672009 5983977
 	#awk '{if ($2 >= 20) {print $0}}' | gzip > $@

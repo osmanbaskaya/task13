@@ -1,7 +1,6 @@
-run/
-bin/
-data/
-src/
+run/*
+bin/*
+data/*
 
 *.py[cod]
 
