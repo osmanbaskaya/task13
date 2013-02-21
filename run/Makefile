@@ -37,6 +37,9 @@ ukwac.split: #splitting data into training and test for perplexity calc.
 ukwac.tokenize: ## time=1h30m, wc=88214600 2247153469 12385653002
 	tokenize.py
 
+trial.all.gz: trial.gz trial.ngram.gz trial.gold.gz trial.pos.gz trial.word.gz trial.id.gz
+	
+
 trial.tok.gz: ../trial
 	../bin/trial_data_parser.py | gzip > $@
 
