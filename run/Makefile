@@ -13,7 +13,7 @@ NCPU=7 # Number of threads/processes to use for parallel computations
 DATA=../data/tokenized/
 ### 1.3 INPUT files:
 TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
-TEST=${DATA}test.ukwac.tok.gz
+TEST=${DATA}test.ukwac.tok.gz  # ukWaC Test Corpus wc= 39203 998193 5509360
 
 ### 2. COMMON FILES
 
@@ -29,7 +29,6 @@ TEST=${DATA}test.ukwac.tok.gz
 LM_NGRAM=4# n-gram order
 LM_VOCAB=100 # words seen less than this in GETTRAIN will be replaced with <unk>
 LM_MTYPE=i686-m64 # architecture for compiling srilm
-
 
 ukwac.split: #splitting data into training and test for perplexity calc.
 	../bin/data_splitter.py
@@ -59,11 +58,15 @@ ukwac.ppl.gz:
 	#ngram -order ${LM_NGRAM} -unk -lm $< -ppl - -debug 2 | gzip > $@
 	zcat ${TEST} | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm${LM_NGRAM}.gz -ppl - -debug 2 | gzip > $@
 
+trial.ppl.gz:
+	zcat trial.tok.gz | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm${LM_NGRAM}.gz -ppl - -debug 2 | gzip > $@
+
+
 ### 2.3 FASTSUBS options:
 FS_NSUB=100 # go until you have this many substitutes
 FS_PSUB=1.0 # or this much cumulative probability
 FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 
-ukwac.sub.gz: ${TEST} ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1: time=4h47m, wc=1222974 245817774 2350067125
+ukwac.sub.gz: ${TEST} ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1 
 	zcat $< | fastsubs ${FS_OPTIONS} wsj.lm.gz | gzip > $@
 

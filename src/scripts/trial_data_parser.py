@@ -55,8 +55,8 @@ def parse():
             #print sname, mean
 
 def main():
-    #parse()
-    tokenize()
+    parse()
+    #tokenize()
 
 if __name__ == '__main__':
     main()
