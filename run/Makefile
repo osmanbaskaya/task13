@@ -40,7 +40,6 @@ ukwac.tokenize: ## time=1h30m, wc=88214600 2247153469 12385653002
 
 trial.all.gz: trial.gz trial.ngram.gz trial.gold.gz trial.pos.gz trial.word.gz trial.id.gz
 	
-
 trial.tok.gz: ../trial
 	../bin/trial_data_parser.py | gzip > $@
 
@@ -86,5 +85,5 @@ FS_NSUB=100 # go until you have this many substitutes
 FS_PSUB=1.0 # or this much cumulative probability
 FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 
-%.sub.gz: %.ngram.gz ukwac.lm4.gz  ## FS_NSUB=100 FS_PSUB=1 
-	zcat $< | fastsubs ${FS_OPTIONS} | grep -P '^__XX__\t' | gzip > $@
+%.sub.gz: %.ngram.gz ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1 
+	zcat $< | ../bin/fastsubs ${FS_OPTIONS} ukwac.lm.gz | grep -P '^__XX__\t' | gzip > $@
