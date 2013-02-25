@@ -10,6 +10,8 @@ export PATH := ../../bin:.:${SRILM_PATH}:${PATH} # Binaries in the bin directory
 SEED=1  # Random seed
 NCPU=7 # Number of threads/processes to use for parallel computations
 
+MATLAB_PATH=/mnt/opt/matlab/linux64/R2011a/bin/matlab -nojvm -nodisplay
+
 DATA=../data/tokenized/
 ### 1.3 INPUT files:
 TRAIN=${DATA}train.ukwac.tok.gz # ukWaC Corpus wc=88214600 2247153469 12385653002
@@ -79,7 +81,6 @@ ukwac.ppl.gz:
 trial.ppl.gz:
 	zcat trial.tok.gz | ngram -order ${LM_NGRAM} -unk -lm ukwac.lm${LM_NGRAM}.gz -ppl - -debug 2 | gzip > $@
 
-
 ### 2.3 FASTSUBS options:
 FS_NSUB=100 # go until you have this many substitutes
 FS_PSUB=1.0 # or this much cumulative probability
@@ -87,3 +88,28 @@ FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 
 %.sub.gz: %.ngram.gz ukwac.lm.gz  ## FS_NSUB=100 FS_PSUB=1 
 	zcat $< | ../bin/fastsubs ${FS_OPTIONS} ukwac.lm.gz | grep -P '^__XX__\t' | gzip > $@
+
+%.localize: #%.sub.gz %.word.gz
+	-mkdir %/; -mkdir %.gold/
+	../bin/localize.py $*
+
+%.dist: %.sub.gz
+
+### DISTANCE METRICS
+
+KNN=50
+DIS=2#Manhattan
+
+trial.knn.gz: trial.sub.gz
+	zcat $< | preinput.py | dists -k ${KNN} -v -d ${DIS} -p ${NCPU} 2> knn${DIS}.err | gzip > $@ 
+
+## CLUSTERING
+
+%.spectral: %.knn.gz
+	${MATLAB_PATH} < ../bin/runsc.m > $*.spectral 2> $*.spectral.err
+	gzip $*.spectral.c*
+
+# 0=euclid, 1=cosine 2=manhattan 3=maximum 4=jensen 5=zero-mean covariance
+trial.c%.kmeans.gz: test.spectral.c%.gz
+	zcat $< | wkmeans -k $* -r 5 -s ${SEED} -v | gzip > $@
+
