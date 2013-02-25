@@ -90,7 +90,8 @@ FS_OPTIONS=-n ${FS_NSUB} -p ${FS_PSUB}
 	zcat $< | ../bin/fastsubs ${FS_OPTIONS} ukwac.lm.gz | grep -P '^__XX__\t' | gzip > $@
 
 %.localize: #%.sub.gz %.word.gz
-	-mkdir %/; -mkdir %.gold/
+	-mkdir $*/; 
+	-mkdir $*.gold/
 	../bin/localize.py $*
 
 %.dist: %.sub.gz
@@ -101,7 +102,7 @@ KNN=50
 DIS=2#Manhattan
 
 trial.knn.gz: trial.sub.gz
-	zcat $< | preinput.py | dists -k ${KNN} -v -d ${DIS} -p ${NCPU} 2> knn${DIS}.err | gzip > $@ 
+	zcat $< | ../bin/preinput.py | ../bin/dists -k ${KNN} -v -d ${DIS} -p ${NCPU} 2> knn${DIS}.err | gzip > $@ 
 
 ## CLUSTERING
 

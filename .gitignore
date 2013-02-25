@@ -1,6 +1,8 @@
 run/*
 bin/*
 data/*
+src/*
+!src/scripts
 
 *.py[cod]
 
