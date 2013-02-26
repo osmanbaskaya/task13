@@ -111,6 +111,6 @@ trial.knn.gz: trial.sub.gz
 	gzip $*.spectral.c*
 
 # 0=euclid, 1=cosine 2=manhattan 3=maximum 4=jensen 5=zero-mean covariance
-trial.c%.kmeans.gz: test.spectral.c%.gz
+trial.c%.kmeans.gz: trial.spectral.c%.gz
 	zcat $< | wkmeans -k $* -r 5 -s ${SEED} -v | gzip > $@
 

@@ -1,4 +1,4 @@
-all: scripts fastsubs dists runpca.m runiso.m readsparse.mexa64 runsc.m
+all: scripts fastsubs dists runpca.m runiso.m readsparse.mexa64 runsc.m wkmeans
 
 scripts: check
 	test -e $@ || ln -s ../src/scripts/* .
